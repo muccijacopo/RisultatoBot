@@ -12,7 +12,7 @@ from telegram.ext import (
 
 BOT_TOKEN = os.getenv("BOT_TOKEN") or config("BOT_TOKEN")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL") or config("WEBHOOK_URL")
-PORT = os.getenv("PORT", "8443")
+PORT = int(os.getenv("PORT", "8443"))
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s", level=logging.INFO
@@ -65,9 +65,10 @@ def main():
     dispatcher.add_handler(MessageHandler(Filters.text, echo))
     dispatcher.add_handler(InlineQueryHandler(inline_query_handler))
 
-    updater.start_webhook(
-        listen="0.0.0.0", port=PORT, webhook_url=(f"{WEBHOOK_URL}/{BOT_TOKEN}")
-    )
+    print(WEBHOOK_URL, PORT)
+
+    updater.start_webhook(listen="0.0.0.0", port=PORT, url_path=BOT_TOKEN)
+    updater.bot.set_webhook(f"{WEBHOOK_URL}/{BOT_TOKEN}")
     updater.idle()
 
 
